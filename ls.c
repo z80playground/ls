@@ -63,11 +63,12 @@ char **argv;		/* argument vector */
   int size_sw, attr_sw;
   int sort_sw, case_sw;
   int blm;
+  int args_left;
 
   size_sw = attr_sw = sort_sw = case_sw = 0;
-  get_args(&size_sw, &attr_sw, &sort_sw, &case_sw, argc, argv);
+  args_left = get_args(&size_sw, &attr_sw, &sort_sw, &case_sw, argc, argv);
   get_params();
-  if ((count = save_fcb(fcb_ptr,attr_sw,&tot)) == -1){
+  if ((count = save_fcb(fcb_ptr,attr_sw,&tot,args_left)) == -1){
     printf("Warning: FCB list too large for available memory\n");
     exit();
     }
@@ -86,15 +87,23 @@ char **argv;		/* argument vector */
     }
 }
 
-save_fcb(fcb_ptr, attr, ncnt)
+save_fcb(fcb_ptr, attr, ncnt, arg_present)
 char *fcb_ptr[];
 char *ncnt;
 int attr;
+int arg_present;
 {
   int nsave,n;
   char *p, *malloc(), *buf_ptr;
   char ro, sys;
   char cusr, fusr;
+
+  /* If nothing was specified then we need to add a default pattern of
+   * '????????.???'. */
+  if ( arg_present == 0 ) {
+      for( n = 0; n < 11; n++ )
+          FCBADR[1 + n] = '?';
+  }
 
   cusr = usr;
   *ncnt = nsave = 0;
@@ -256,6 +265,10 @@ char *argv[];
         default:
 	  printf("Warning: Illegal switch (%c) - Ignored\n",*sptr);
         }
+    else
+        return 1;
+
+   return 0;
 }
 
 sort_fcb(v, n, num)
