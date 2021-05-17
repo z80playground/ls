@@ -63,11 +63,12 @@ char **argv;		/* argument vector */
   int size_sw, attr_sw;
   int sort_sw, case_sw;
   int blm;
+  int got_pattern;
 
   size_sw = attr_sw = sort_sw = case_sw = 0;
-  get_args(&size_sw, &attr_sw, &sort_sw, &case_sw, argc, argv);
+  got_pattern = get_args(&size_sw, &attr_sw, &sort_sw, &case_sw, argc, argv);
   get_params();
-  if ((count = save_fcb(fcb_ptr,attr_sw,&tot)) == -1){
+  if ((count = save_fcb(fcb_ptr,attr_sw,&tot,got_pattern)) == -1){
     printf("Warning: FCB list too large for available memory\n");
     exit();
     }
@@ -86,15 +87,23 @@ char **argv;		/* argument vector */
     }
 }
 
-save_fcb(fcb_ptr, attr, ncnt)
+save_fcb(fcb_ptr, attr, ncnt, got_pattern)
 char *fcb_ptr[];
 char *ncnt;
 int attr;
+int got_pattern;
 {
   int nsave,n;
   char *p, *malloc(), *buf_ptr;
   char ro, sys;
   char cusr, fusr;
+
+  /* If nothing was specified then we need to add a default pattern of
+   * '????????.???'. */
+  if ( got_pattern == 0 ) {
+      for( n = 0; n < 11; n++ )
+          FCBADR[1 + n] = '?';
+  }
 
   cusr = usr;
   *ncnt = nsave = 0;
@@ -195,6 +204,9 @@ char *argv[];
 {
   char *sptr;
 
+  /* did we find a non-flag argument? */
+  int found = 0;
+
   while (--argc > 0)
     if ((*++argv)[0] == '-')
       for (sptr = argv[0]+1; *sptr != '\0'; sptr++)
@@ -256,6 +268,10 @@ char *argv[];
         default:
 	  printf("Warning: Illegal switch (%c) - Ignored\n",*sptr);
         }
+    else
+      found = 1;
+
+  return (found);
 }
 
 sort_fcb(v, n, num)
