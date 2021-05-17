@@ -1,8 +1,8 @@
-/**************************************************************** 
- *								* 
- *	ls.c  -  CP/M Directory lising program			* 
- *		 Written in BDS C  				* 
- *		 Written by: Bob Longoria			*  
+/****************************************************************
+ *								*
+ *	ls.c  -  CP/M Directory lising program			*
+ *		 Written in BDS C  				*
+ *		 Written by: Bob Longoria			*
  *		             9-Jan-82				*
  *								*
  *	The program lists the directory in several different	*
@@ -43,8 +43,8 @@
  *	ls *.com -a -s -fl					*
  *								*
  ****************************************************************/
- 
-#include "bdscio.h"	/* Standard header file */
+
+#include "stdio.h"	/* Standard header file */
 #define DMABUF 0x0080	/* Default DMA buffer address */
 #define MASK   0x80	/* Attribute bit mask */
 #define SSIZE  16	/* No of significant fcb bytes */
@@ -64,16 +64,19 @@ char **argv;		/* argument vector */
   int sort_sw, case_sw;
   int blm;
 
-  _allocp = NULL;
   size_sw = attr_sw = sort_sw = case_sw = 0;
   get_args(&size_sw, &attr_sw, &sort_sw, &case_sw, argc, argv);
   get_params();
-  if ((count = save_fcb(fcb_ptr,attr_sw,&tot)) == -1){ 
+  if ((count = save_fcb(fcb_ptr,attr_sw,&tot)) == -1){
     printf("Warning: FCB list too large for available memory\n");
     exit();
     }
   else if (count == 0){ /* no match found */
-    printf("No match found for %s\n",argv[1]);
+    if ( argc > 1 ){
+      printf("No match found for %s\n",argv[1]);
+    } else {
+      printf("No pattern supplied.\n");
+    }
     exit();
     }
   else {		/* There may be a match */
@@ -89,7 +92,7 @@ char *ncnt;
 int attr;
 {
   int nsave,n;
-  char *p, *alloc(), *buf_ptr;
+  char *p, *malloc(), *buf_ptr;
   char ro, sys;
   char cusr, fusr;
 
@@ -106,11 +109,11 @@ int attr;
       if (((attr == 1 &&  sys) || (attr == 2 && ro) ||
 	  (attr == 0 && !sys) || (attr == 3) ||
 	  (attr == 4 && !ro)) && ((fusr ^ cusr) == 0)) {
-	if ((p = alloc(SSIZE)) == NULL)
+	if ((p = malloc(SSIZE)) == NULL)
 	  return(-1);
 	copy_fcb(p, buf_ptr);
 	fcb_ptr[nsave++] = p;
-      } 
+      }
     }
     while ((n=bdos(18,FCBADR)) != 255);
   return (nsave);
@@ -126,7 +129,7 @@ int count, tot;
   char *name;
   unsigned n, s, fsize();
   unsigned tblks, ksize;
-  
+
   tblks = ksize = 0;
   name = "            ";
   printf("Directory for Disk %c:  User %2d:\n", dsk+'A', usr);
@@ -300,7 +303,7 @@ char *ptr;
     n = ex*128+n;
   else
     if (n == 128) {
-    if ((p = alloc(SSIZE+20)) == NULL)
+    if ((p = malloc(SSIZE+20)) == NULL)
       return(0);
     copy_fcb(p, ptr);
     bdos(35,p);
@@ -324,4 +327,3 @@ get_params()
   blm = *(dpb_ptr+3)+1;
   usr = bdos(32,0x00ff);
 }
-
