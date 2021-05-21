@@ -10,3 +10,6 @@ It is written in C and can be compiled using Aztec C v1.06D from Manx Software S
 * as ls
 * ln ls.o c.lib t.lib
 
+The source code says that it was originally written by Bob Longoria. It was then changed slightly by Steve Kemp to make it compatible with Aztec C so that we can compile it on the Z80 Playground.
+
+
