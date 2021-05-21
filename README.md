@@ -6,7 +6,7 @@ It is pretty much equivalent to the Linux "ls" command, i.e. an improvement on D
 
 It is written in C and can be compiled using Aztec C v1.06D from Manx Software Systems:
 
-cc ls.c
-as ls
-ln ls.o c.lib t.lib
+* cc ls.c
+* as ls
+* ln ls.o c.lib t.lib
 
