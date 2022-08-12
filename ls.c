@@ -89,8 +89,8 @@ char **argv;		/* argument vector */
 
 save_fcb(fcb_ptr, attr, ncnt, got_pattern)
 char *fcb_ptr[];
-char *ncnt;
 int attr;
+int *ncnt;
 int got_pattern;
 {
   int nsave,n;
@@ -190,11 +190,11 @@ int c;
 
   for (i = 0; i < 12; i++)
     if (i < 8)
-      *(s+i) = (c) ? *(t+i+1) : tolower(*(t+i+1) & ~MASK);
+      *(s+i) = (c) ? *(t+i+1) & ~MASK : tolower(*(t+i+1) & ~MASK);
     else if (i == 8)
       ;
     else
-      *(s+i) = (c) ? *(t+i) : tolower(*(t+i) & ~MASK);
+      *(s+i) = (c) ? *(t+i) & ~MASK : tolower(*(t+i) & ~MASK);
 }
 
 get_args (psize, pattr, psort, pcase, argc, argv)
@@ -339,7 +339,7 @@ get_params()
   if (dsk < 0)
     dsk = bdos(25,0);
   bdos(14,dsk);
-  dpb_ptr = bdos(31,dsk);
+  dpb_ptr = bdoshl(31,dsk);
   blm = *(dpb_ptr+3)+1;
   usr = bdos(32,0x00ff);
 }
