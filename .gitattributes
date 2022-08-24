@@ -1,3 +1,6 @@
-*.c linguist-detectable=true
-*.dok linguist-detectable=false
-*.com linguist-detectable=false
+*.c text eol=crlf
+*.dok text eol=crlf
+*.com binary
+ls.c linguist-detectable
+ls.dok linguist-documentation
+ls.com linguist-generated
